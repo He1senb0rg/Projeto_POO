@@ -1,21 +1,15 @@
 package pt.iscte.poo.objects;
 
-import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 
-public class Wall extends Object{
-    public Wall(Point2D position) {
+public class Stairs extends Object {
+    public Stairs(Point2D position) {
         super(position);
     }
 
     @Override
     public String getName() {
-        return "Wall";
-    }
-
-    @Override
-    public int getLayer() {
-        return 1;
+        return "Stairs";
     }
 
     @Override
@@ -23,5 +17,8 @@ public class Wall extends Object{
         return position;
     }
 
-
+    @Override
+    public int getLayer() {
+        return 1;
+    }
 }

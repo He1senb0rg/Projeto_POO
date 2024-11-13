@@ -2,9 +2,7 @@ package pt.iscte.poo.game;
 
 import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.gui.ImageTile;
-import pt.iscte.poo.objects.Background;
-import pt.iscte.poo.objects.JumpMan;
-import pt.iscte.poo.objects.Wall;
+import pt.iscte.poo.objects.*;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
 
@@ -15,10 +13,12 @@ import java.util.List;
 public class GameEngine {
 
 	JumpMan jumpMan = new JumpMan(new Point2D(5, 8));
+	DonkeyKong donkeyKong = new DonkeyKong(new Point2D(2, 8));
+	List<ImageTile> tiles = new ArrayList<>();
 	
 	public GameEngine() {
 		ImageGUI gui = ImageGUI.getInstance();
-		List<ImageTile> tiles = new ArrayList<>();
+
 
 		for (int x = 0; x < 10; x++) {
 			//Adicionar o background:
@@ -31,24 +31,39 @@ public class GameEngine {
 			tiles.add(new Wall(new Point2D(x, 9)));
 		}
 
-
+		tiles.add(new Stairs(new Point2D(7, 8)));
+		tiles.add(new Stairs(new Point2D(7, 7)));
 		tiles.add(jumpMan);
+		tiles.add(donkeyKong);
 
 		gui.addImages(tiles);
 	}
 
 	public void keyPressed(int key) {
 		if(key == KeyEvent.VK_UP) {
-			System.out.println("User pressed UP");
+			for (ImageTile tile : tiles){
+				if (tile instanceof Stairs && jumpMan.getPosition().equals(tile.getPosition())) {
+					jumpMan.move(new Vector2D(0, -1));
+				}
+			}
 		}
 		if(key == KeyEvent.VK_RIGHT) {
-			System.out.println("User pressed RIGHT");
+			if (jumpMan.getPosition().getX() < 9) {
+				jumpMan.move(new Vector2D(1, 0));
+			}
 		}
 		if(key == KeyEvent.VK_DOWN) {
-			System.out.println("User pressed DOWN");
+			for (ImageTile tile : tiles){
+				if ((tile instanceof Stairs && jumpMan.getPosition().equals(tile.getPosition()))) {
+					jumpMan.move(new Vector2D(0, 1));
+				}
+			}
 		}
 		if(key == KeyEvent.VK_LEFT) {
-			System.out.println("User pressed LEFT");
+			if (jumpMan.getPosition().getX() > 0) {
+				jumpMan.move(new Vector2D(-1, 0));
+			}
+
 		}
 	}
 
