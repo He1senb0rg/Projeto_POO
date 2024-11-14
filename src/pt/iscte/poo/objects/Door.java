@@ -2,14 +2,14 @@ package pt.iscte.poo.objects;
 
 import pt.iscte.poo.utils.Point2D;
 
-public class DonkeyKong extends Character{
-    public DonkeyKong(Point2D position) {
+public class Door extends Object{
+    public Door(Point2D position) {
         super(position);
     }
 
     @Override
     public String getName() {
-        return "DonkeyKong";
+        return "DoorOpen";
     }
 
     @Override
@@ -17,5 +17,8 @@ public class DonkeyKong extends Character{
         return position;
     }
 
-    public void throwBanana(){}
+    @Override
+    public int getLayer() {
+        return 1;
+    }
 }
