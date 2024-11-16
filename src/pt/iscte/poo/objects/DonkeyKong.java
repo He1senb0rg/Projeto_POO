@@ -1,8 +1,9 @@
 package pt.iscte.poo.objects;
 
 import pt.iscte.poo.utils.Point2D;
+import pt.iscte.poo.utils.Vector2D;
 
-public class DonkeyKong extends Character{
+public class DonkeyKong extends Character implements Movable{
     public DonkeyKong(Point2D position) {
         super(position);
     }
@@ -12,10 +13,10 @@ public class DonkeyKong extends Character{
         return "DonkeyKong";
     }
 
-    @Override
-    public Point2D getPosition() {
-        return position;
-    }
-
     public void throwBanana(){}
+
+    @Override
+    public void move(Point2D direcao) {
+
+    }
 }

@@ -13,11 +13,6 @@ public class Stairs extends Object {
     }
 
     @Override
-    public Point2D getPosition() {
-        return position;
-    }
-
-    @Override
     public int getLayer() {
         return 1;
     }

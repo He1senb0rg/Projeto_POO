@@ -4,7 +4,7 @@ import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 
 public abstract class Character implements ImageTile {
-    Point2D position;
+    private Point2D position;
 
     public Character(Point2D position) {
         this.position = position;
@@ -14,7 +14,13 @@ public abstract class Character implements ImageTile {
     public abstract String getName();
 
     @Override
-    public abstract Point2D getPosition();
+    public Point2D getPosition(){
+        return position;
+    }
+
+    public void setPosition(Point2D pos){
+        this.position = pos;
+    }
 
     @Override
     public int getLayer() {

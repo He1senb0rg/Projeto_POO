@@ -18,10 +18,5 @@ public class Background extends Object {
         return 0;
     }
 
-    @Override
-    public Point2D getPosition() {
-        return position;
-    }
-
 
 }

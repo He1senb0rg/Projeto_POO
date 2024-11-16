@@ -3,10 +3,10 @@ package pt.iscte.poo.objects;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 
-public abstract class Object implements ImageTile {
+public abstract class Pickable implements ImageTile {
     private Point2D position;
 
-    public Object(Point2D position){
+    public Pickable(Point2D position) {
         this.position = position;
     }
 
@@ -19,5 +19,7 @@ public abstract class Object implements ImageTile {
     }
 
     @Override
-    public abstract int getLayer();
+    public int getLayer() {
+        return 2;
+    };
 }

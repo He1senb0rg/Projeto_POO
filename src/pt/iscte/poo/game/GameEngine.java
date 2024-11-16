@@ -20,9 +20,14 @@ public class GameEngine {
 	ImageGUI gui = ImageGUI.getInstance();
 	
 	public GameEngine() {
-		readRoomFile("room0");
+		//recolhe a informação de um ficheiro 'room' e gera a room baseado nesse ficheiro
+		readRoomFile("room0.txt");
 
-		//background
+		gui.addImages(tiles);
+	}
+
+	public void readRoomFile(String room){
+		//preenche o ecrã com o background
 		for (int x = 0; x < 10; x++) {
 			for (int y = 0; y < 10; y++) {
 				Point2D position = new Point2D(x, y);
@@ -30,13 +35,10 @@ public class GameEngine {
 			}
 		}
 
-		gui.addImages(tiles);
-	}
-
-	public void readRoomFile(String room){
 		try {
-			Scanner fileScanner = new Scanner(new File("rooms/" + room + ".txt"));
-			String nextRoom = fileScanner.nextLine(); // skip first line
+			Scanner fileScanner = new Scanner(new File("rooms/" + room));
+			String firstLine = fileScanner.nextLine(); // skip first line
+			String nextRoom = firstLine.split(";")[1];
 			int y = 0;
 
 			while (fileScanner.hasNextLine()) {
@@ -61,14 +63,24 @@ public class GameEngine {
 							DonkeyKong donkeyKong = new DonkeyKong(position);
 							tiles.add(donkeyKong);
 							break;
+						case 'P': //princess
+							Princess princess = new Princess(position);
+							tiles.add(princess);
+							break;
 						case 's': //sword
-
+							tiles.add(new Sword(position));
+							break;
+						case 'H': //hammer
+							tiles.add(new Hammer(position));
+							break;
+						case 'm': //meat
+							tiles.add(new Meat(position));
 							break;
 						case '0': //door
-							tiles.add(new Door(position));
+							tiles.add(new Door(position, nextRoom));
 							break;
-						case 'T': //trap
-
+						case 't': //trap
+							tiles.add(new Trap(position));
 							break;
 						default:
 							System.out.println("Unrecognised character: " + c);
@@ -84,33 +96,69 @@ public class GameEngine {
 	}
 
 	public void keyPressed(int key) {
+		Point2D newPosition = null;
+
+		//recolhe a direção para a qual o jogador quer movimentar-se
 		if(key == KeyEvent.VK_UP) {
-			for (ImageTile tile : tiles){
-				if (tile instanceof Stairs && jumpMan.getPosition().equals(tile.getPosition())) {
-					jumpMan.move(new Vector2D(0, -1));
-				}
+			if (jumpMan.isOnStairs(tiles)) {
+				newPosition = jumpMan.getPosition().plus(new Vector2D(0, -1));
 			}
 		}
+
 		if(key == KeyEvent.VK_RIGHT) {
 			if (jumpMan.getPosition().getX() < 9) {
-				jumpMan.move(new Vector2D(1, 0));
-			}
-		}
-		if(key == KeyEvent.VK_DOWN) {
-			for (ImageTile tile : tiles){
-				if ((tile instanceof Stairs && jumpMan.getPosition().equals(tile.getPosition()))) {
-					jumpMan.move(new Vector2D(0, 1));
+				if(!jumpMan.isOnTopOfNothing(tiles)) {
+					newPosition = jumpMan.getPosition().plus(new Vector2D(1, 0));
 				}
 			}
 		}
+
+		if(key == KeyEvent.VK_DOWN) {
+			if (jumpMan.isOnStairs(tiles) || jumpMan.isOnTopOfStairs(tiles)) {
+				newPosition = jumpMan.getPosition().plus(new Vector2D(0, 1));
+			}
+		}
+
 		if(key == KeyEvent.VK_LEFT) {
 			if (jumpMan.getPosition().getX() > 0) {
-				jumpMan.move(new Vector2D(-1, 0));
+				if(!jumpMan.isOnTopOfNothing(tiles)) {
+					newPosition = jumpMan.getPosition().plus(new Vector2D(-1, 0));
+				}
 			}
+		}
+
+		//verifica se a posição é válida (se não tem uma parede a frente) e move o jumpMan para essa posição se for válida
+		if (newPosition != null && jumpMan.validPosition(tiles, newPosition)) {
+			jumpMan.move(new Point2D(newPosition.getX() - jumpMan.getPosition().getX(),
+					newPosition.getY() - jumpMan.getPosition().getY()));
+		}
+
+		if (jumpMan.isOnTopOfNothing(tiles)) {
+			jumpManFall(jumpMan, tiles);
+		}
+	}
+
+	public void jumpManFall(JumpMan jumpMan, List<ImageTile> tiles) {
+		Point2D supportTileBellow = jumpMan.nearstSupportTileBellow(tiles);
+
+		if (supportTileBellow != null) {
+			jumpMan.move(new Point2D(0, supportTileBellow.getY() - jumpMan.getPosition().getY() - 1));
 		}
 	}
 
 	public void tick(int ticks) {
-		System.out.println("Tic tac.. " + ticks);
+		Door door = jumpMan.collisionWithDoor(tiles);
+
+		if (door != null) {
+			changeRoom(door.getNextRoom());
+		}
+	}
+
+	private void changeRoom(String nextRoom) {
+		tiles.clear();
+		readRoomFile(nextRoom);
+
+		gui.clearImages();
+		gui.addImages(tiles);
 	}
 }

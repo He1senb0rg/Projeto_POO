@@ -17,11 +17,4 @@ public class Wall extends Object{
     public int getLayer() {
         return 1;
     }
-
-    @Override
-    public Point2D getPosition() {
-        return position;
-    }
-
-
 }

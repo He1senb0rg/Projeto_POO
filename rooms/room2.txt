@@ -1,4 +1,5 @@
-WPG  G    
+#0;room3.txt
+WPG  G
 WWWWWWWWWS
          S
 SWWW tt WW
@@ -6,5 +7,5 @@ S
 SWWWWW  WW
 S         
 WWWWWWWSWW
-       S H
+ J     S H
 WWWWWWWWWW
