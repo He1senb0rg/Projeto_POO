@@ -1,5 +1,6 @@
 package pt.iscte.poo.objects;
 
+import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
@@ -7,13 +8,9 @@ import pt.iscte.poo.utils.Vector2D;
 import java.util.List;
 
 public class JumpMan extends Character implements Movable {
-    private int health;
-    private int damage;
 
     public JumpMan(Point2D position) {
-        super(position);
-        this.health = 100;
-        this.damage = 20;
+        super(position, 100, 20);
     }
 
     public void move(Point2D direction) {
@@ -23,17 +20,10 @@ public class JumpMan extends Character implements Movable {
     }
 
     public boolean isOnTopOfStairs(List<ImageTile> tiles){
-        Point2D underJumpMan = this.getPosition().plus(new Vector2D(0, 1)); //posicao abaixo do jumpMan
-        ImageTile underJumpManTile = null;
+        ImageTile underJumpManTile = getUnderTile(tiles);
 
-        for (ImageTile tile : tiles) {
-            //verifica se o tile abaixo do jumpMan é uma escada
-            if (tile instanceof Stairs && tile.getPosition().equals(underJumpMan)) {
-                underJumpManTile = tile;
-            }
-        }
-
-        if (underJumpManTile != null) {
+        //verifica se o tile abaixo do jumpMan é uma escada
+        if (underJumpManTile instanceof Stairs) {
             return true;
         }
 
@@ -62,21 +52,14 @@ public class JumpMan extends Character implements Movable {
     }
 
     public boolean isOnTopOfNothing(List<ImageTile> tiles) {
-        Point2D underJumpMan = this.getPosition().plus(new Vector2D(0, 1)); //posicao abaixo do jumpMan
-        ImageTile underJumpManTile = null;
+        ImageTile underJumpManTile = getUnderTile(tiles);
 
-        for (ImageTile tile : tiles) {
-            //verifica se existe um tile abaixo do jumpMan
-            if (!(tile instanceof Background) && tile.getPosition().equals(underJumpMan)) {
-                underJumpManTile = tile;
-            }
+        //verifica se existe um tile debaixo do jumpMan
+        if (!(underJumpManTile instanceof Background)) {
+            return false;
         }
 
-        if (underJumpManTile == null) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
     public Point2D nearstSupportTileBellow(List<ImageTile> tiles) {
@@ -104,24 +87,54 @@ public class JumpMan extends Character implements Movable {
         return null;
     }
 
+    public void collisionWithTrap(List<ImageTile> tiles) {
+        for (ImageTile tile : tiles) {
+            if (tile instanceof Trap && tile.getPosition().equals(this.getPosition())) {
+                this.takeDamage(((Trap) tile).getDamage());
+            }
+        }
+    }
+
+    public boolean isOnTopOfTrap(List<ImageTile> tiles){
+        ImageTile underJumpManTile = getUnderTile(tiles);
+
+        //verifica se o tile abaixo do jumpMan é uma trap
+        if (underJumpManTile instanceof Trap) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public ImageTile getUnderTile(List<ImageTile> tiles){
+        Point2D underJumpMan = this.getPosition().plus(new Vector2D(0, 1)); //posicao abaixo do jumpMan
+        ImageTile underJumpManTile = null;
+
+        for (ImageTile tile : tiles) {
+            //verifica se o tile abaixo do jumpMan
+            if (tile.getPosition().equals(underJumpMan)) {
+                underJumpManTile = tile;
+            }
+        }
+
+        return underJumpManTile;
+    }
+
+    public void collisionWithMeat(List<ImageTile> tiles) {
+        for (ImageTile tile : tiles) {
+            if (tile instanceof Meat && tile.getPosition().equals(this.getPosition())) {
+                ((Meat) tile).interact(this);
+
+                // Remove a carne do jogo após ser consumida
+                tiles.remove(tile);
+                ImageGUI.getInstance().removeImage(tile);
+                break;
+            }
+        }
+    }
+
     @Override
     public String getName() {
         return "JumpMan";
-    }
-
-    public int getHealth() {
-        return health;
-    }
-
-    public void setHealth(int health) {
-        this.health = health;
-    }
-
-    public int getDamage() {
-        return damage;
-    }
-
-    public void setDamage(int damage) {
-        this.damage = damage;
     }
 }

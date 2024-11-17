@@ -1,13 +1,18 @@
 package pt.iscte.poo.objects;
 
+import pt.iscte.poo.gui.ImageGUI;
 import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 
-public abstract class Character implements ImageTile {
+public abstract class Character implements ImageTile, Movable {
     private Point2D position;
+    private int health;
+    private int damage;
 
-    public Character(Point2D position) {
+    public Character(Point2D position, int health, int damage) {
         this.position = position;
+        this.health = health;
+        this.damage = damage;
     }
 
     @Override
@@ -26,4 +31,29 @@ public abstract class Character implements ImageTile {
     public int getLayer() {
         return 2;
     };
+
+    public int getHealth() {
+        return health;
+    }
+
+    public void setHealth(int health) {
+        this.health = health;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int damage) {
+        this.damage = damage;
+    }
+
+    public void takeDamage(int damage) {
+        this.health -= damage;
+        ImageGUI.getInstance().setStatusMessage("Jump Man took " + damage + " damage!");
+    }
+
+    public void gainHealth(int health){
+        this.health += health;
+    }
 }

@@ -11,4 +11,9 @@ public class Hammer extends Pickable{
     public String getName() {
         return "Hammer";
     }
+
+    @Override
+    public void interact(Character character) {
+
+    }
 }

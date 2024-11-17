@@ -5,7 +5,7 @@ import pt.iscte.poo.utils.Vector2D;
 
 public class DonkeyKong extends Character implements Movable{
     public DonkeyKong(Point2D position) {
-        super(position);
+        super(position, 100, 25);
     }
 
     @Override

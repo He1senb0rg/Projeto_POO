@@ -11,4 +11,9 @@ public class Sword extends Pickable{
     public String getName() {
         return "Sword";
     }
+
+    @Override
+    public void interact(Character character) {
+
+    }
 }

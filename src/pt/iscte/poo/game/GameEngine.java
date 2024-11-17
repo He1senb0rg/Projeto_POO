@@ -131,8 +131,21 @@ public class GameEngine {
 		if (newPosition != null && jumpMan.validPosition(tiles, newPosition)) {
 			jumpMan.move(new Point2D(newPosition.getX() - jumpMan.getPosition().getX(),
 					newPosition.getY() - jumpMan.getPosition().getY()));
+
+			//verifica se o jumpMan foi contra uma trap
+			jumpMan.collisionWithTrap(tiles);
+
+			//verifica se o jumpMan foi contra uma carne
+			jumpMan.collisionWithMeat(tiles);
+
+			//verifica se o jumpMan esta em cima de uma trap
+			if (jumpMan.isOnTopOfTrap(tiles)) {
+				ImageTile trap = jumpMan.getUnderTile(tiles);
+				jumpMan.takeDamage(((Trap) trap).getDamage());
+			}
 		}
 
+		//se nao tiver chao em baixo do jumpMan ele cai
 		if (jumpMan.isOnTopOfNothing(tiles)) {
 			jumpManFall(jumpMan, tiles);
 		}
