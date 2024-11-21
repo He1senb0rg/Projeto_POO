@@ -18,6 +18,10 @@ public abstract class Object implements ImageTile {
         return position;
     }
 
+    public void setPosition(Point2D position) {
+        this.position = position;
+    }
+
     @Override
     public abstract int getLayer();
 }

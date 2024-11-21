@@ -16,9 +16,10 @@ import java.util.Scanner;
 public class GameEngine {
 
 	JumpMan jumpMan;
+	DonkeyKong donkeyKong;
 	List<ImageTile> tiles = new ArrayList<>();
 	ImageGUI gui = ImageGUI.getInstance();
-	
+
 	public GameEngine() {
 		//recolhe a informação de um ficheiro 'room' e gera a room baseado nesse ficheiro
 		readRoomFile("room0.txt");
@@ -60,7 +61,7 @@ public class GameEngine {
 							tiles.add(jumpMan);
 							break;
 						case 'G': //donkeyKong
-							DonkeyKong donkeyKong = new DonkeyKong(position);
+							donkeyKong = new DonkeyKong(position);
 							tiles.add(donkeyKong);
 							break;
 						case 'P': //princess
@@ -164,6 +165,15 @@ public class GameEngine {
 
 		if (door != null) {
 			changeRoom(door.getNextRoom());
+		}
+
+		gui.addImage(donkeyKong.throwBanana(tiles));
+
+		for (ImageTile banana : tiles) {
+			if (banana instanceof Banana) {
+				Point2D newPosition = banana.getPosition().plus(new Vector2D(banana.getPosition().getX(), banana.getPosition().getY() + 1));
+				((Banana) banana).setPosition(newPosition);
+			}
 		}
 	}
 
