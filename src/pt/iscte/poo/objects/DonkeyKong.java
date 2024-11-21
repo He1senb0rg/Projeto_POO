@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DonkeyKong extends Character implements Movable{
     public DonkeyKong(Point2D position) {
-        super(position, 100, 25);
+        super(position, 100, 100, 25);
     }
 
     @Override

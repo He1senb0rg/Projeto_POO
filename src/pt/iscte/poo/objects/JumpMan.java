@@ -10,7 +10,7 @@ import java.util.List;
 public class JumpMan extends Character implements Movable {
 
     public JumpMan(Point2D position) {
-        super(position, 100, 20);
+        super(position, 100, 100, 20);
     }
 
     public void move(Point2D direction) {
@@ -111,7 +111,7 @@ public class JumpMan extends Character implements Movable {
         ImageTile underJumpManTile = null;
 
         for (ImageTile tile : tiles) {
-            //verifica se o tile abaixo do jumpMan
+            //verifica o tile abaixo do jumpMan
             if (tile.getPosition().equals(underJumpMan)) {
                 underJumpManTile = tile;
             }
@@ -126,6 +126,32 @@ public class JumpMan extends Character implements Movable {
                 ((Meat) tile).interact(this);
 
                 // Remove a carne do jogo após ser consumida
+                tiles.remove(tile);
+                ImageGUI.getInstance().removeImage(tile);
+                break;
+            }
+        }
+    }
+
+    public void collisionWithSword(List<ImageTile> tiles) {
+        for (ImageTile tile : tiles) {
+            if (tile instanceof Sword && tile.getPosition().equals(this.getPosition())) {
+                ((Sword) tile).interact(this);
+
+                // Remove a espada do jogo após ser picked up
+                tiles.remove(tile);
+                ImageGUI.getInstance().removeImage(tile);
+                break;
+            }
+        }
+    }
+
+    public void collisionWithHammer(List<ImageTile> tiles) {
+        for (ImageTile tile : tiles) {
+            if (tile instanceof Hammer && tile.getPosition().equals(this.getPosition())) {
+                ((Hammer) tile).interact(this);
+
+                // Remove o hammer do jogo após ser picked up
                 tiles.remove(tile);
                 ImageGUI.getInstance().removeImage(tile);
                 break;

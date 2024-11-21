@@ -90,6 +90,7 @@ public class GameEngine {
 				y++;
 			}
 
+			ImageGUI.getInstance().setStatusMessage("Health: " + jumpMan.getHealth() + " Damage: " + jumpMan.getDamage());
 			fileScanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -138,6 +139,10 @@ public class GameEngine {
 
 			//verifica se o jumpMan foi contra uma carne
 			jumpMan.collisionWithMeat(tiles);
+
+			jumpMan.collisionWithSword(tiles);
+
+			jumpMan.collisionWithHammer(tiles);
 
 			//verifica se o jumpMan esta em cima de uma trap
 			if (jumpMan.isOnTopOfTrap(tiles)) {

@@ -21,7 +21,6 @@ public class Meat extends Pickable{
         if (!this.isPicked()) {
             character.gainHealth(health);
             setPicked(true);
-            ImageGUI.getInstance().setStatusMessage("Jump Man gained +" + health + " health!");
         }
     }
 }
