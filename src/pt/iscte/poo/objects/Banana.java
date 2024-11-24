@@ -1,6 +1,7 @@
 package pt.iscte.poo.objects;
 
 import pt.iscte.poo.utils.Point2D;
+import pt.iscte.poo.utils.Vector2D;
 
 public class Banana extends Object{
     private int damage;
@@ -18,6 +19,12 @@ public class Banana extends Object{
         this.damage = damage;
     }
 
+    public void move(Vector2D direction) {
+        Point2D newPosition = this.getPosition().plus(new Vector2D(direction.getX(), direction.getY()));
+
+        this.setPosition(newPosition);
+    }
+
     @Override
     public String getName() {
         return "Banana";
@@ -25,6 +32,6 @@ public class Banana extends Object{
 
     @Override
     public int getLayer() {
-        return 2;
+        return 3;
     }
 }

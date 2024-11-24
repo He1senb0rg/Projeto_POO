@@ -5,18 +5,13 @@ import pt.iscte.poo.gui.ImageTile;
 import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
 
+import javax.swing.*;
 import java.util.List;
 
 public class JumpMan extends Character implements Movable {
 
     public JumpMan(Point2D position) {
         super(position, 100, 100, 20);
-    }
-
-    public void move(Point2D direction) {
-        Point2D newPosition = this.getPosition().plus(new Vector2D(direction.getX(), direction.getY()));
-
-        this.setPosition(newPosition);
     }
 
     public boolean isOnTopOfStairs(List<ImageTile> tiles){
@@ -39,16 +34,6 @@ public class JumpMan extends Character implements Movable {
         }
 
         return false;
-    }
-
-    public boolean validPosition(List<ImageTile> tiles, Point2D position) {
-        for (ImageTile tile : tiles) {
-            if (tile instanceof Wall && tile.getPosition().equals(position)) {
-                return false;
-            }
-        }
-
-        return true;
     }
 
     public boolean isOnTopOfNothing(List<ImageTile> tiles) {
@@ -78,23 +63,6 @@ public class JumpMan extends Character implements Movable {
         return null;
     }
 
-    public Door collisionWithDoor(List<ImageTile> tiles) {
-        for (ImageTile tile : tiles) {
-            if (tile instanceof Door && tile.getPosition().equals(this.getPosition())) {
-                return (Door) tile;
-            }
-        }
-        return null;
-    }
-
-    public void collisionWithTrap(List<ImageTile> tiles) {
-        for (ImageTile tile : tiles) {
-            if (tile instanceof Trap && tile.getPosition().equals(this.getPosition())) {
-                this.takeDamage(((Trap) tile).getDamage());
-            }
-        }
-    }
-
     public boolean isOnTopOfTrap(List<ImageTile> tiles){
         ImageTile underJumpManTile = getUnderTile(tiles);
 
@@ -120,43 +88,33 @@ public class JumpMan extends Character implements Movable {
         return underJumpManTile;
     }
 
-    public void collisionWithMeat(List<ImageTile> tiles) {
+    public ImageTile getTile(List<ImageTile> tiles){
         for (ImageTile tile : tiles) {
-            if (tile instanceof Meat && tile.getPosition().equals(this.getPosition())) {
-                ((Meat) tile).interact(this);
-
-                // Remove a carne do jogo após ser consumida
-                tiles.remove(tile);
-                ImageGUI.getInstance().removeImage(tile);
-                break;
+            if (!(tile instanceof Background) && tile.getPosition().equals(this.getPosition())) {
+                return tile;
             }
+        }
+
+        return null;
+    }
+
+    @Override
+    public void takeDamage(int damage){
+        this.setHealth(this.getHealth() - damage);
+        ImageGUI.getInstance().setStatusMessage(this.getName() + " took " + damage + " damage! Health: " + getHealth() + " Damage: " + getDamage());
+
+        if (getHealth() <= 0) {
+            gameOver();
         }
     }
 
-    public void collisionWithSword(List<ImageTile> tiles) {
-        for (ImageTile tile : tiles) {
-            if (tile instanceof Sword && tile.getPosition().equals(this.getPosition())) {
-                ((Sword) tile).interact(this);
+    private void gameOver() {
+        JOptionPane.showMessageDialog(null,
+                "JumpMan has died! Try again!",
+                "Game Over",
+                JOptionPane.INFORMATION_MESSAGE);
 
-                // Remove a espada do jogo após ser picked up
-                tiles.remove(tile);
-                ImageGUI.getInstance().removeImage(tile);
-                break;
-            }
-        }
-    }
-
-    public void collisionWithHammer(List<ImageTile> tiles) {
-        for (ImageTile tile : tiles) {
-            if (tile instanceof Hammer && tile.getPosition().equals(this.getPosition())) {
-                ((Hammer) tile).interact(this);
-
-                // Remove o hammer do jogo após ser picked up
-                tiles.remove(tile);
-                ImageGUI.getInstance().removeImage(tile);
-                break;
-            }
-        }
+        System.exit(0);
     }
 
     @Override
