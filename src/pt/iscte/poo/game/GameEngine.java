@@ -138,7 +138,6 @@ public class GameEngine {
 				gui.removeImage(donkeyKong);
 				donkeyKong = null;
 			}
-
 		}
 
 		if (princess != null && princess.getPosition().equals(newPosition)){
@@ -187,33 +186,47 @@ public class GameEngine {
 				jumpMan.takeDamage(((Trap) trap).getDamage());
 			}
 		}
-
-		//se nao tiver chao em baixo do jumpMan ele cai
-		if (jumpMan.isOnTopOfNothing(tiles)) {
-			jumpManFall(jumpMan, tiles);
-		}
 	}
 
 	public void jumpManFall(JumpMan jumpMan, List<ImageTile> tiles) {
 		Point2D supportTileBellow = jumpMan.nearstSupportTileBellow(tiles);
 
-		if (supportTileBellow != null) {
-			jumpMan.move(new Point2D(0, supportTileBellow.getY() - jumpMan.getPosition().getY() - 1));
+		//if (supportTileBellow != null) {
+		//	jumpMan.move(new Point2D(0, supportTileBellow.getY() - jumpMan.getPosition().getY() - 1));
+		//}
+		while (jumpMan.getPosition().getY() != supportTileBellow.getY() - 1) {
+			jumpMan.move(new Point2D(0, 1));
 		}
 	}
 
 	public void tick(int ticks) {
+		//se nao tiver chao em baixo do jumpMan ele cai
+		if (jumpMan.isOnTopOfNothing(tiles)) {
+			jumpManFall(jumpMan, tiles);
+		}
+
 		if (donkeyKong != null) {
 			List<ImageTile> banananas = new ArrayList<>();
-			donkeyKong.simpleMove(tiles);
+			Point2D newDKposition = donkeyKong.simpleMove(tiles);
 
-			banananas.add(donkeyKong.throwBanana());
+			if (jumpMan.getPosition().equals(newDKposition)) {
+				jumpMan.takeDamage(donkeyKong.getDamage());
+				if (jumpMan.getHealth() <= 0) {
+					tiles.remove(jumpMan);
+					gui.removeImage(jumpMan);
+					jumpMan = null;
+				}
+			}
 
+			donkeyKong.throwBanana(banananas);
 			gui.addImages(banananas);
 
 			for (ImageTile banana : banananas) {
-				Point2D newPosition = banana.getPosition().plus(new Vector2D(0, 1));
-				((Banana) banana).move(new Vector2D(0, 1));
+				if (banana instanceof Banana){
+					//Point2D newPosition = banana.getPosition().plus(new Vector2D(0, 1));
+					//((Banana) banana).move(new Point2D(newPosition.getX() - banana.getPosition().getX(), newPosition.getY() - banana.getPosition().getY()));
+					((Banana) banana).moveBellow();
+				}
 			}
 		}
 	}

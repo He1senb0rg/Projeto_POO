@@ -17,11 +17,12 @@ public class DonkeyKong extends Character implements Movable{
         return "DonkeyKong";
     }
 
-    public Banana throwBanana(){
-        return new Banana(this.getPosition());
+    public void throwBanana(List<ImageTile> tiles){
+        Banana banana = new Banana(this.getPosition());
+        tiles.add(banana);
     }
 
-    public void simpleMove(List<ImageTile> tiles) {
+    public Point2D simpleMove(List<ImageTile> tiles) {
         Random random = new Random();
         int directionDK = random.nextInt(2);
         Point2D newPosition = null;
@@ -40,6 +41,8 @@ public class DonkeyKong extends Character implements Movable{
 
             this.move(newPosition);
         }
+
+        return this.getPosition().plus(new Vector2D(newPosition.getX(), newPosition.getY()));
     }
 
     public void advancedMove(List<ImageTile> tiles) {

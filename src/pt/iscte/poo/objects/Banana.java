@@ -19,10 +19,14 @@ public class Banana extends Object{
         this.damage = damage;
     }
 
-    public void move(Vector2D direction) {
+    public void move(Point2D direction) {
         Point2D newPosition = this.getPosition().plus(new Vector2D(direction.getX(), direction.getY()));
 
         this.setPosition(newPosition);
+    }
+
+    public void moveBellow(){
+        this.setPosition(this.getPosition().plus(new Vector2D(0, 1)));
     }
 
     @Override
