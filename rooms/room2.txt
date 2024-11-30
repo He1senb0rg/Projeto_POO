@@ -1,8 +1,7 @@
-#0;room3.txt
 WP   G
 WWWWWWWWWS
          S
-SWWWWttWWW
+SWWW tt WW
 S         
 SWWWWW  WW
 S         

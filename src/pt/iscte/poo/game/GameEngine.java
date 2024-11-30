@@ -40,12 +40,17 @@ public class GameEngine {
 
 		try {
 			Scanner fileScanner = new Scanner(new File("rooms/" + room));
-			String firstLine = fileScanner.nextLine(); // skip first line
-			String nextRoom = firstLine.split(";")[1];
+			String nextRoom = "";
 			int y = 0;
+
+			String firstLine = fileScanner.nextLine(); // skip first line
+			if (firstLine.startsWith("#")) {
+				nextRoom = firstLine.split(";")[1];
+			}
 
 			while (fileScanner.hasNextLine()) {
 				String line = fileScanner.nextLine();
+
 				for (int x = 0; x < line.length(); x++) {
 					char c = line.charAt(x);
 
@@ -111,7 +116,7 @@ public class GameEngine {
 		}
 
 		if(key == KeyEvent.VK_RIGHT) {
-			if(!jumpMan.isOnTopOfNothing(tiles)) {
+			if(!jumpMan.isFalling()) {
 				//guarda posicao q o jumpMan vai para depois verificar se esta posicao é valida
 				newPosition = jumpMan.getPosition().plus(new Vector2D(1, 0));
 			}
@@ -125,7 +130,7 @@ public class GameEngine {
 		}
 
 		if(key == KeyEvent.VK_LEFT) {
-			if(!jumpMan.isOnTopOfNothing(tiles)) {
+			if(!jumpMan.isFalling()) {
 				//guarda posicao q o jumpMan vai para depois verificar se esta posicao é valida
 				newPosition = jumpMan.getPosition().plus(new Vector2D(-1, 0));
 			}
@@ -146,6 +151,7 @@ public class GameEngine {
 						"Yippie",
 						JOptionPane.INFORMATION_MESSAGE);
 
+				jumpMan.showHighscores();
 				System.exit(0);
 			}
 
@@ -157,23 +163,33 @@ public class GameEngine {
 			ImageTile newTile = jumpMan.getTile(tiles);
 
 			if (newTile != null) {
+				if (newTile instanceof Banana){ // verifica se o jumpMan foi contra uma banana
+					jumpMan.takeDamage(((Banana) newTile).getDamage());
+					tiles.remove(newTile);
+					gui.removeImage(newTile);
+				}
+
 				if (newTile instanceof Trap){ //verifica se o jumpMan foi contra uma trap
 					jumpMan.takeDamage(((Trap) newTile).getDamage());
 				}
-				else if (newTile instanceof Door){ //verifica se o jumpMan foi contra uma door
+
+				if (newTile instanceof Door){ //verifica se o jumpMan foi contra uma door
 					changeRoom(((Door) newTile).getNextRoom());
 				}
-				else if (newTile instanceof Meat){ //verifica se o jumpMan foi contra uma carne
+
+				if (newTile instanceof Meat){ //verifica se o jumpMan foi contra uma carne
 					((Meat) newTile).interact(jumpMan);
 					tiles.remove(newTile);
 					gui.removeImage(newTile);
 				}
-				else if (newTile instanceof Sword){ //verifica se o jumpMan foi contra uma espada
+
+				if (newTile instanceof Sword){ //verifica se o jumpMan foi contra uma espada
 					((Sword) newTile).interact(jumpMan);
 					tiles.remove(newTile);
 					gui.removeImage(newTile);
 				}
-				else if (newTile instanceof Hammer){ //verifica se o jumpMan foi contra um martelo
+
+				if (newTile instanceof Hammer){ //verifica se o jumpMan foi contra um martelo
 					((Hammer) newTile).interact(jumpMan);
 					tiles.remove(newTile);
 					gui.removeImage(newTile);
@@ -188,25 +204,21 @@ public class GameEngine {
 		}
 	}
 
-	public void jumpManFall(JumpMan jumpMan, List<ImageTile> tiles) {
-		Point2D supportTileBellow = jumpMan.nearstSupportTileBellow(tiles);
-
-		//if (supportTileBellow != null) {
-		//	jumpMan.move(new Point2D(0, supportTileBellow.getY() - jumpMan.getPosition().getY() - 1));
-		//}
-		while (jumpMan.getPosition().getY() != supportTileBellow.getY() - 1) {
-			jumpMan.move(new Point2D(0, 1));
-		}
-	}
-
 	public void tick(int ticks) {
 		//se nao tiver chao em baixo do jumpMan ele cai
 		if (jumpMan.isOnTopOfNothing(tiles)) {
-			jumpManFall(jumpMan, tiles);
+			Point2D supportTileBellow = jumpMan.nearstSupportTileBellow(tiles);
+
+			jumpMan.setFalling(true);
+			jumpMan.move(new Point2D(0, 1));
+
+			if (jumpMan.getPosition().getY() == supportTileBellow.getY() - 1){
+				jumpMan.setFalling(false);
+			}
 		}
 
+		List<ImageTile> removeBananas = new ArrayList<>();
 		if (donkeyKong != null) {
-			List<ImageTile> banananas = new ArrayList<>();
 			Point2D newDKposition = donkeyKong.simpleMove(tiles);
 
 			if (jumpMan.getPosition().equals(newDKposition)) {
@@ -218,17 +230,27 @@ public class GameEngine {
 				}
 			}
 
-			donkeyKong.throwBanana(banananas);
-			gui.addImages(banananas);
+			donkeyKong.throwBanana(tiles);
+		}
 
-			for (ImageTile banana : banananas) {
-				if (banana instanceof Banana){
-					//Point2D newPosition = banana.getPosition().plus(new Vector2D(0, 1));
-					//((Banana) banana).move(new Point2D(newPosition.getX() - banana.getPosition().getX(), newPosition.getY() - banana.getPosition().getY()));
-					((Banana) banana).moveBellow();
+		for (ImageTile banana : tiles) {
+			if (banana instanceof Banana){
+				((Banana) banana).move(new Point2D(0, 1));
+				if (banana.getPosition().equals(jumpMan.getPosition())) {
+					jumpMan.takeDamage(((Banana) banana).getDamage());
+					removeBananas.add(banana);
+				}
+				if (banana.getPosition().getY() >= 10){
+					removeBananas.add(banana);
 				}
 			}
 		}
+
+		for (ImageTile banana : removeBananas) {
+			tiles.remove(banana);
+			ImageGUI.getInstance().removeImage(banana);
+		}
+
 	}
 
 	private void changeRoom(String nextRoom) {

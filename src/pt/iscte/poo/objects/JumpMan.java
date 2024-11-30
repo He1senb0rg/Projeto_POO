@@ -6,12 +6,20 @@ import pt.iscte.poo.utils.Point2D;
 import pt.iscte.poo.utils.Vector2D;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class JumpMan extends Character implements Movable {
+    private boolean isFalling;
 
     public JumpMan(Point2D position) {
         super(position, 100, 100, 20);
+        this.isFalling = false;
     }
 
     public boolean isOnTopOfStairs(List<ImageTile> tiles){
@@ -90,7 +98,7 @@ public class JumpMan extends Character implements Movable {
 
     public ImageTile getTile(List<ImageTile> tiles){
         for (ImageTile tile : tiles) {
-            if (!(tile instanceof Background) && tile.getPosition().equals(this.getPosition())) {
+            if (!(tile instanceof Background) && !(tile instanceof JumpMan) && !(tile instanceof Stairs) && tile.getPosition().equals(this.getPosition())) {
                 return tile;
             }
         }
@@ -114,11 +122,74 @@ public class JumpMan extends Character implements Movable {
                 "Game Over",
                 JOptionPane.INFORMATION_MESSAGE);
 
+        showHighscores();
         System.exit(0);
+    }
+
+    public void showHighscores(){
+        System.out.println("Your Highscore: \n");
+        List<Highscore> listHighscores = new ArrayList<>();
+
+        try {
+            Scanner fileScanner = new Scanner(new File("highscore/highscores.txt"));
+
+            if (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String name = line.split(": ")[0];
+                int score = Integer.parseInt(line.split(": ")[1]);
+                listHighscores.add(new Highscore(score, name));
+            }
+
+            Collections.sort(listHighscores);
+
+            if (!listHighscores.isEmpty()) {
+                for (Highscore highscore : listHighscores) {
+                    System.out.println(listHighscores.indexOf(highscore) + ". " + highscore);
+                }
+            }
+            else {
+                System.out.println("No highscores found");
+            }
+
+            fileScanner.close();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (listHighscores.size() > 10) {
+            listHighscores.subList(0, 10);
+        }
+
+        saveHighscore(123);
+    }
+
+    public void saveHighscore(int score){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("What's your name?");
+        String name = scanner.nextLine();
+
+        try {
+            PrintWriter fileWriter = new PrintWriter("highscore/highscores.txt");
+            Highscore highscore = new Highscore(score, name);
+            fileWriter.println(highscore);
+            fileWriter.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public String getName() {
         return "JumpMan";
+    }
+
+    public boolean isFalling() {
+        return isFalling;
+    }
+
+    public void setFalling(boolean falling) {
+        isFalling = falling;
     }
 }
