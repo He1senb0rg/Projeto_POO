@@ -117,11 +117,7 @@ public class JumpMan extends Character implements Movable {
     }
 
     private void gameOver() {
-        JOptionPane.showMessageDialog(null,
-                "JumpMan has died! Try again!",
-                "Game Over",
-                JOptionPane.INFORMATION_MESSAGE);
-
+        ImageGUI.getInstance().showMessage("Game Over", "JumpMan has died! Try again!");
         showHighscores();
         System.exit(0);
     }

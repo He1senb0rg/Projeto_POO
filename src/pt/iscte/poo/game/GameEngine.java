@@ -146,13 +146,10 @@ public class GameEngine {
 		}
 
 		if (princess != null && princess.getPosition().equals(newPosition)){
-				JOptionPane.showMessageDialog(null,
-						"Congratulations! You saved the princess!",
-						"Yippie",
-						JOptionPane.INFORMATION_MESSAGE);
+			gui.showMessage("Yippie", "Congratulations! You saved the princess!");
 
-				jumpMan.showHighscores();
-				System.exit(0);
+			jumpMan.showHighscores();
+			System.exit(0);
 			}
 
 		//verifica se a posição é válida (se não tem uma parede a frente) e move o jumpMan para essa posição se for válida
