@@ -1,11 +1,11 @@
 #0;room6.txt
 0    G
 WWWWWWWSWW
-     t S
-WWW t tWW
-WWW    WW
-SWWHWWWWW
-WWW   sWW
-WWWWWWWWWW
- J  S
+       S
+WWWWWWWS
+       S
+SWWWWWWWW
+S     s
+SWWWWWWWtW
+S       J
 WWWWWWWWWW

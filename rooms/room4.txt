@@ -1,10 +1,10 @@
 #0;room5.txt
   0G   G
-WWWWWWWWWW
+WWWWWWWSWW
        S H
 SWWWWW ttW
-  s      W
-WWWWWWW  W
+S s      W
+SWWWWWW  W
 S  t    tW
 WWWWWWSWWW
  J    S  H

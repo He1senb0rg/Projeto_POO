@@ -17,15 +17,16 @@ import java.util.Scanner;
 
 public class GameEngine {
 	JumpMan jumpMan;
-	DonkeyKong donkeyKong;
+	List<DonkeyKong> listDK = new ArrayList<>();
 	Princess princess;
 	List<ImageTile> tiles = new ArrayList<>();
 	ImageGUI gui = ImageGUI.getInstance();
 	int gameEnd;
+	int level = 1;
 
 	public GameEngine() {
 		//recolhe a informação de um ficheiro 'room' e gera a room baseado nesse ficheiro
-		readRoomFile("room3.txt");
+		readRoomFile("room0.txt");
 
 		gui.addImages(tiles);
 	}
@@ -61,7 +62,7 @@ public class GameEngine {
 			ImageGUI.getInstance().setStatusMessage("Health: " + jumpMan.getHealth() + " Damage: " + jumpMan.getDamage());
 			fileScanner.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("Houve um erro ao carregar a sala: " + e.getMessage());
 		}
 	}
 
@@ -83,7 +84,8 @@ public class GameEngine {
 					tiles.add(jumpMan);
 					break;
 				case 'G': //donkeyKong
-					donkeyKong = new DonkeyKong(position);
+					DonkeyKong donkeyKong = new DonkeyKong(position);
+					listDK.add(donkeyKong);
 					tiles.add(donkeyKong);
 					break;
 				case 'P': //princess
@@ -105,8 +107,6 @@ public class GameEngine {
 				case 't': //trap
 					tiles.add(new Trap(position));
 					break;
-				default:
-					System.out.println("Unrecognised character: " + c);
 			}
 		}
 	}
@@ -143,13 +143,21 @@ public class GameEngine {
 			}
 		}
 
-		if (donkeyKong != null && donkeyKong.getPosition().equals(newPosition)) {
-			donkeyKong.takeDamage(jumpMan.getDamage());
-			if (donkeyKong.getHealth() <= 0) {
-				tiles.remove(donkeyKong);
-				gui.removeImage(donkeyKong);
-				donkeyKong = null;
+		DonkeyKong dkRemove = null;
+		for (DonkeyKong dk : listDK) {
+			if (dk != null && dk.getPosition().equals(newPosition)) {
+				dk.takeDamage(jumpMan.getDamage());
+				if (dk.getHealth() <= 0) {
+					tiles.remove(dk);
+					gui.removeImage(dk);
+					dkRemove = dk;
+					dk = null;
+				}
 			}
+		}
+
+		if (dkRemove != null) {
+			listDK.remove(dkRemove);
 		}
 
 		if (princess != null && princess.getPosition().equals(newPosition)){
@@ -227,20 +235,30 @@ public class GameEngine {
 		}
 
 		List<ImageTile> removeBananas = new ArrayList<>();
-		if (donkeyKong != null) {
-			Point2D newDKposition = donkeyKong.simpleMove(tiles);
-
-			if (jumpMan.getPosition().equals(newDKposition)) {
-				jumpMan.takeDamage(donkeyKong.getDamage());
-				if (jumpMan.getHealth() <= 0) {
-					tiles.remove(jumpMan);
-					gui.removeImage(jumpMan);
-					jumpMan = null;
+		for (DonkeyKong dk : listDK) {
+			if (dk != null) {
+				Point2D newDKposition = null;
+				if (level <= 6){
+					newDKposition = dk.simpleMove(tiles);
 				}
-			}
+				else{
+					newDKposition = dk.advancedMove(tiles, jumpMan);
+				}
 
-			donkeyKong.throwBanana(tiles);
+
+				if (jumpMan.getPosition().equals(newDKposition)) {
+					jumpMan.takeDamage(dk.getDamage());
+					if (jumpMan.getHealth() <= 0) {
+						tiles.remove(jumpMan);
+						gui.removeImage(jumpMan);
+						jumpMan = null;
+					}
+				}
+
+				dk.throwBanana(tiles);
+			}
 		}
+
 
 		for (ImageTile banana : tiles) {
 			if (banana instanceof Banana){
@@ -265,6 +283,7 @@ public class GameEngine {
 	private void changeRoom(String nextRoom) {
 		tiles.clear();
 		readRoomFile(nextRoom);
+		level++;
 
 		gui.clearImages();
 		gui.addImages(tiles);

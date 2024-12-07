@@ -1,8 +1,8 @@
 #0;room4.txt
-W0G      S
+W0G
 WWWWWWWWWS
          S
-SWWWWW ttW
+SWWWWW tWW
 S    m
 SWWWWSW  W
 S t  S  tW
