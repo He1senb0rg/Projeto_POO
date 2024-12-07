@@ -1,0 +1,10 @@
+#0;room8.txt
+0G  GG
+WWWWWWWWWW
+     t
+WWWtttttWW
+WWWWWWWW W
+W   s H  W
+WWWWWWWWWW
+ J   t  SW
+WWWWWWWWWW

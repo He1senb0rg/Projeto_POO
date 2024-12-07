@@ -1,4 +1,5 @@
-WP   G
+#0;room3.txt
+W0   G
 WWWWWWWWWS
          S
 SWWW tt WW

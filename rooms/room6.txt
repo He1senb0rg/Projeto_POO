@@ -1,0 +1,10 @@
+#0;room7.txt
+0G   G
+WWWWWWWWWWW
+        S
+WWWttttt WW
+WWWWWWWW  W
+    s     W
+WWWWWWWWW W
+ J       SW
+WWWWWWWWWWW

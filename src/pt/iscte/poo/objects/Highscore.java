@@ -33,10 +33,10 @@ public class Highscore implements Comparable<Highscore> {
     @Override
     public int compareTo(Highscore o) {
         if (this.score > o.score) {
-            return 1;
+            return -1;
         }
         if (this.score < o.score) {
-            return -1;
+            return 1;
         }
         return 0;
     }

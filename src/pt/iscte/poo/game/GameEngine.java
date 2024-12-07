@@ -21,10 +21,11 @@ public class GameEngine {
 	Princess princess;
 	List<ImageTile> tiles = new ArrayList<>();
 	ImageGUI gui = ImageGUI.getInstance();
+	int gameEnd;
 
 	public GameEngine() {
 		//recolhe a informação de um ficheiro 'room' e gera a room baseado nesse ficheiro
-		readRoomFile("room0.txt");
+		readRoomFile("room3.txt");
 
 		gui.addImages(tiles);
 	}
@@ -46,54 +47,14 @@ public class GameEngine {
 			String firstLine = fileScanner.nextLine(); // skip first line
 			if (firstLine.startsWith("#")) {
 				nextRoom = firstLine.split(";")[1];
-			}
+			} else {
+				readLine(firstLine, y, "");
+				y++;
+		}
 
 			while (fileScanner.hasNextLine()) {
 				String line = fileScanner.nextLine();
-
-				for (int x = 0; x < line.length(); x++) {
-					char c = line.charAt(x);
-
-					Point2D position = new Point2D(x, y);
-
-					switch (c) {
-						case 'W': //wall
-							tiles.add(new Wall(position));
-							break;
-						case 'S': //stairs
-							tiles.add(new Stairs(position));
-							break;
-						case 'J': //jumpMan
-							jumpMan = new JumpMan(position);
-							tiles.add(jumpMan);
-							break;
-						case 'G': //donkeyKong
-							donkeyKong = new DonkeyKong(position);
-							tiles.add(donkeyKong);
-							break;
-						case 'P': //princess
-							princess = new Princess(position);
-							tiles.add(princess);
-							break;
-						case 's': //sword
-							tiles.add(new Sword(position));
-							break;
-						case 'H': //hammer
-							tiles.add(new Hammer(position));
-							break;
-						case 'm': //meat
-							tiles.add(new Meat(position));
-							break;
-						case '0': //door
-							tiles.add(new Door(position, nextRoom));
-							break;
-						case 't': //trap
-							tiles.add(new Trap(position));
-							break;
-						default:
-							System.out.println("Unrecognised character: " + c);
-					}
-				}
+				readLine(line, y, nextRoom);
 				y++;
 			}
 
@@ -101,6 +62,52 @@ public class GameEngine {
 			fileScanner.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void readLine(String line, int y, String nextRoom) {
+		for (int x = 0; x < line.length(); x++) {
+			char c = line.charAt(x);
+
+			Point2D position = new Point2D(x, y);
+
+			switch (c) {
+				case 'W': //wall
+					tiles.add(new Wall(position));
+					break;
+				case 'S': //stairs
+					tiles.add(new Stairs(position));
+					break;
+				case 'J': //jumpMan
+					jumpMan = new JumpMan(position);
+					tiles.add(jumpMan);
+					break;
+				case 'G': //donkeyKong
+					donkeyKong = new DonkeyKong(position);
+					tiles.add(donkeyKong);
+					break;
+				case 'P': //princess
+					princess = new Princess(position);
+					tiles.add(princess);
+					break;
+				case 's': //sword
+					tiles.add(new Sword(position));
+					break;
+				case 'H': //hammer
+					tiles.add(new Hammer(position));
+					break;
+				case 'm': //meat
+					tiles.add(new Meat(position));
+					break;
+				case '0': //door
+					tiles.add(new Door(position, nextRoom));
+					break;
+				case 't': //trap
+					tiles.add(new Trap(position));
+					break;
+				default:
+					System.out.println("Unrecognised character: " + c);
+			}
 		}
 	}
 
@@ -146,11 +153,16 @@ public class GameEngine {
 		}
 
 		if (princess != null && princess.getPosition().equals(newPosition)){
-			gui.showMessage("Yippie", "Congratulations! You saved the princess!");
+			gameEnd = ImageGUI.getInstance().getTicks();
+			int finalScore = finalScore(10000, 50);
+
+			gui.showMessage("Yippie", "Congratulations! You saved the princess!\nYour score:" + finalScore);
 
 			jumpMan.showHighscores();
+			jumpMan.saveHighscore(finalScore);
+
 			System.exit(0);
-			}
+		}
 
 		//verifica se a posição é válida (se não tem uma parede a frente) e move o jumpMan para essa posição se for válida
 		if (newPosition != null && jumpMan.validPosition(tiles, newPosition)) {
@@ -256,5 +268,11 @@ public class GameEngine {
 
 		gui.clearImages();
 		gui.addImages(tiles);
+	}
+
+	private int finalScore(int score, int penaltyPerSec){
+		int finalScore = score - (gameEnd * penaltyPerSec);
+
+		return Math.max(finalScore, 0);
 	}
 }

@@ -123,13 +123,12 @@ public class JumpMan extends Character implements Movable {
     }
 
     public void showHighscores(){
-        System.out.println("Your Highscore: \n");
         List<Highscore> listHighscores = new ArrayList<>();
 
         try {
             Scanner fileScanner = new Scanner(new File("highscore/highscores.txt"));
 
-            if (fileScanner.hasNextLine()) {
+            while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 String name = line.split(": ")[0];
                 int score = Integer.parseInt(line.split(": ")[1]);
@@ -137,15 +136,6 @@ public class JumpMan extends Character implements Movable {
             }
 
             Collections.sort(listHighscores);
-
-            if (!listHighscores.isEmpty()) {
-                for (Highscore highscore : listHighscores) {
-                    System.out.println(listHighscores.indexOf(highscore) + ". " + highscore);
-                }
-            }
-            else {
-                System.out.println("No highscores found");
-            }
 
             fileScanner.close();
         }
@@ -157,10 +147,38 @@ public class JumpMan extends Character implements Movable {
             listHighscores.subList(0, 10);
         }
 
-        saveHighscore(123);
+        if (!listHighscores.isEmpty()) {
+            System.out.println("Top 10 Highscores:");
+            for (Highscore highscore : listHighscores) {
+                System.out.println(listHighscores.indexOf(highscore) + 1 + ". " + highscore);
+            }
+        }
+        else {
+            System.out.println("No highscores found");
+        }
     }
 
     public void saveHighscore(int score){
+        List<Highscore> listHighscores = new ArrayList<>();
+
+        try {
+            Scanner fileScanner = new Scanner(new File("highscore/highscores.txt"));
+
+            while (fileScanner.hasNextLine()) {
+                String line = fileScanner.nextLine();
+                String name = line.split(": ")[0];
+                int scoreLine = Integer.parseInt(line.split(": ")[1]);
+                listHighscores.add(new Highscore(scoreLine, name));
+            }
+
+            Collections.sort(listHighscores);
+
+            fileScanner.close();
+        }
+        catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("What's your name?");
         String name = scanner.nextLine();
@@ -168,12 +186,24 @@ public class JumpMan extends Character implements Movable {
         try {
             PrintWriter fileWriter = new PrintWriter("highscore/highscores.txt");
             Highscore highscore = new Highscore(score, name);
-            fileWriter.println(highscore);
+            listHighscores.add(highscore);
+
+            Collections.sort(listHighscores);
+
+            if (listHighscores.size() > 10) {
+                listHighscores.subList(0, 10);
+            }
+
+            for (Highscore h : listHighscores) {
+                fileWriter.println(h);
+            }
+
             fileWriter.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
+        showHighscores();
     }
 
     @Override
