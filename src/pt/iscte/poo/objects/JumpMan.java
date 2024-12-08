@@ -55,10 +55,11 @@ public class JumpMan extends Character implements Movable {
         return true;
     }
 
+    //verifica o tile mais proximo do jumpMan quando ele cai
     public Point2D nearstSupportTileBellow(List<ImageTile> tiles) {
         Point2D position = this.getPosition();
 
-        for (int y = position.getY() + 1; y < 10; y++) { // Itera pelas posições abaixo
+        for (int y = position.getY() + 1; y < 10; y++) { //itera pelas posições abaixo
             Point2D positionBellow = new Point2D(position.getX(), y);
 
             for (ImageTile tile : tiles) {
@@ -96,6 +97,7 @@ public class JumpMan extends Character implements Movable {
         return underJumpManTile;
     }
 
+    //saber qual o tile onde o jumpMan esta
     public ImageTile getTile(List<ImageTile> tiles){
         for (ImageTile tile : tiles) {
             if (!(tile instanceof Background) && !(tile instanceof JumpMan) && !(tile instanceof Stairs) && tile.getPosition().equals(this.getPosition())) {
@@ -106,28 +108,33 @@ public class JumpMan extends Character implements Movable {
         return null;
     }
 
+    //override o metodo do takeDamage para meter o metodo de gameOver
     @Override
     public void takeDamage(int damage){
         this.setHealth(this.getHealth() - damage);
         ImageGUI.getInstance().setStatusMessage(this.getName() + " took " + damage + " damage! Health: " + getHealth() + " Damage: " + getDamage());
 
+        //mata o jumpMan
         if (getHealth() <= 0) {
             gameOver();
         }
     }
 
+    //fim do jogo
     private void gameOver() {
         ImageGUI.getInstance().showMessage("Game Over", "JumpMan has died! Try again!");
-        showHighscores();
+        showHighscores(); //mostra os highscores
         System.exit(0);
     }
 
     public void showHighscores(){
         List<Highscore> listHighscores = new ArrayList<>();
 
+        //le o ficheiro de highscores
         try {
             Scanner fileScanner = new Scanner(new File("highscore/highscores.txt"));
 
+            //coloca os highscores do ficheiro na lista de highscores
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 String name = line.split(": ")[0];
@@ -135,25 +142,28 @@ public class JumpMan extends Character implements Movable {
                 listHighscores.add(new Highscore(score, name));
             }
 
+            //sort dos highscores
             Collections.sort(listHighscores);
 
             fileScanner.close();
         }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
+        catch (FileNotFoundException e) { //caso haja algum problema a ler o ficheiro
+            System.out.println("Houve um erro ao carregar os highscores: " + e.getMessage());
         }
 
+        //divide a lista para apenas aparecer os primeiros 10 highscores
         if (listHighscores.size() > 10) {
             listHighscores.subList(0, 10);
         }
 
+        //da display dos highscores
         if (!listHighscores.isEmpty()) {
             System.out.println("Top 10 Highscores:");
             for (Highscore highscore : listHighscores) {
                 System.out.println(listHighscores.indexOf(highscore) + 1 + ". " + highscore);
             }
         }
-        else {
+        else { //se não houver highscores
             System.out.println("No highscores found");
         }
     }
@@ -161,9 +171,11 @@ public class JumpMan extends Character implements Movable {
     public void saveHighscore(int score){
         List<Highscore> listHighscores = new ArrayList<>();
 
+        //le o ficheiro de highscores
         try {
             Scanner fileScanner = new Scanner(new File("highscore/highscores.txt"));
 
+            //coloca os highscores do ficheiro na lista de highscores
             while (fileScanner.hasNextLine()) {
                 String line = fileScanner.nextLine();
                 String name = line.split(": ")[0];
@@ -171,36 +183,42 @@ public class JumpMan extends Character implements Movable {
                 listHighscores.add(new Highscore(scoreLine, name));
             }
 
+            //sort dos highscores
             Collections.sort(listHighscores);
 
             fileScanner.close();
         }
-        catch (FileNotFoundException e) {
-            e.printStackTrace();
+        catch (FileNotFoundException e) {//caso haja algum problema a ler o ficheiro
+            System.out.println("Houve um erro ao carregar os highscores: " + e.getMessage());
         }
 
+        //pede o nome ao player
         Scanner scanner = new Scanner(System.in);
         System.out.println("What's your name?");
         String name = scanner.nextLine();
 
+        //escreve no ficheiro de highscores
         try {
             PrintWriter fileWriter = new PrintWriter("highscore/highscores.txt");
             Highscore highscore = new Highscore(score, name);
             listHighscores.add(highscore);
 
+            //sort dos highscores
             Collections.sort(listHighscores);
 
+            //divide a lista para apenas aparecer os primeiros 10 highscores
             if (listHighscores.size() > 10) {
                 listHighscores.subList(0, 10);
             }
 
+            //escreve no ficheiro os highscores
             for (Highscore h : listHighscores) {
                 fileWriter.println(h);
             }
 
             fileWriter.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException e) {//caso haja algum problema a escrever o ficheiro
+            System.out.println("Houve um erro ao escrever os highscores: " + e.getMessage());
         }
 
         showHighscores();

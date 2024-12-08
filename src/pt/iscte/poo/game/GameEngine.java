@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class GameEngine {
+	//iniciar variaveis
 	JumpMan jumpMan;
 	List<DonkeyKong> listDK = new ArrayList<>();
 	Princess princess;
@@ -40,33 +41,38 @@ public class GameEngine {
 			}
 		}
 
+		//ler o ficheiro de uma room
 		try {
 			Scanner fileScanner = new Scanner(new File("rooms/" + room));
 			String nextRoom = "";
 			int y = 0;
 
-			String firstLine = fileScanner.nextLine(); // skip first line
+			String firstLine = fileScanner.nextLine(); //ler a primeira linha
+			//ver se o ficheiro tem uma referencia para a proxima room
 			if (firstLine.startsWith("#")) {
-				nextRoom = firstLine.split(";")[1];
+				nextRoom = firstLine.split(";")[1]; //guarda a proxima room
 			} else {
-				readLine(firstLine, y, "");
+				readLine(firstLine, y, ""); //se nao tiver a primeira linha a dzr a referencia para a proxima room, mete logo nos tiles essa linha
 				y++;
-		}
+			}
 
+			//lê todas as linhas do ficheiro
 			while (fileScanner.hasNextLine()) {
 				String line = fileScanner.nextLine();
 				readLine(line, y, nextRoom);
 				y++;
 			}
 
-			ImageGUI.getInstance().setStatusMessage("Health: " + jumpMan.getHealth() + " Damage: " + jumpMan.getDamage());
+			//mete a barra informativa com os stats do jumpMan
+			gui.setStatusMessage("Health: " + jumpMan.getHealth() + " Damage: " + jumpMan.getDamage());
 			fileScanner.close();
-		} catch (FileNotFoundException e) {
+		} catch (FileNotFoundException e) { //caso haja algum problema a ler o ficheiro
 			System.out.println("Houve um erro ao carregar a sala: " + e.getMessage());
 		}
 	}
 
 	public void readLine(String line, int y, String nextRoom) {
+		//agarra numa linha e percorre cada caracter q essa linha tem
 		for (int x = 0; x < line.length(); x++) {
 			char c = line.charAt(x);
 
@@ -85,7 +91,7 @@ public class GameEngine {
 					break;
 				case 'G': //donkeyKong
 					DonkeyKong donkeyKong = new DonkeyKong(position);
-					listDK.add(donkeyKong);
+					listDK.add(donkeyKong); //adiciona todos os donkey kongs a lista de donkey kongs
 					tiles.add(donkeyKong);
 					break;
 				case 'P': //princess
@@ -116,38 +122,39 @@ public class GameEngine {
 
 		//recolhe a direção para a qual o jogador quer movimentar-se
 		if(key == KeyEvent.VK_UP) {
-			if (jumpMan.isOnStairs(tiles)) {
+			if (jumpMan.isOnStairs(tiles)) { //apenas pode mexer se para cima quando esta no mesmo tile de uma escada
 				//guarda posicao q o jumpMan vai para depois verificar se esta posicao é valida
 				newPosition = jumpMan.getPosition().plus(new Vector2D(0, -1));
 			}
 		}
 
 		if(key == KeyEvent.VK_RIGHT) {
-			if(!jumpMan.isFalling()) {
+			if(!jumpMan.isFalling()) { //se o jumpMan estiver a cair ele n pode mexer se
 				//guarda posicao q o jumpMan vai para depois verificar se esta posicao é valida
 				newPosition = jumpMan.getPosition().plus(new Vector2D(1, 0));
 			}
 		}
 
 		if(key == KeyEvent.VK_DOWN) {
-			if (jumpMan.isOnStairs(tiles) || jumpMan.isOnTopOfStairs(tiles)) {
+			if (jumpMan.isOnStairs(tiles) || jumpMan.isOnTopOfStairs(tiles)) { //apenas pode mexer se para baixo quando esta no mesmo tile de uma escada ou debaixo de um tile escada
 				//guarda posicao q o jumpMan vai para depois verificar se esta posicao é valida
 				newPosition = jumpMan.getPosition().plus(new Vector2D(0, 1));
 			}
 		}
 
 		if(key == KeyEvent.VK_LEFT) {
-			if(!jumpMan.isFalling()) {
+			if(!jumpMan.isFalling()) { //se o jumpMan estiver a cair ele n pode mexer se
 				//guarda posicao q o jumpMan vai para depois verificar se esta posicao é valida
 				newPosition = jumpMan.getPosition().plus(new Vector2D(-1, 0));
 			}
 		}
 
-		DonkeyKong dkRemove = null;
-		for (DonkeyKong dk : listDK) {
+		//verificar colisoes com donkey kong
+		DonkeyKong dkRemove = null; //referencia para o donkey kong q o jumpMan mata
+		for (DonkeyKong dk : listDK) { //ver se a new position do jumpMan é igual a position de algum dk
 			if (dk != null && dk.getPosition().equals(newPosition)) {
 				dk.takeDamage(jumpMan.getDamage());
-				if (dk.getHealth() <= 0) {
+				if (dk.getHealth() <= 0) { //matar o donkey kong
 					tiles.remove(dk);
 					gui.removeImage(dk);
 					dkRemove = dk;
@@ -156,20 +163,22 @@ public class GameEngine {
 			}
 		}
 
+		//remove o dk da lista de donkey kongs
 		if (dkRemove != null) {
 			listDK.remove(dkRemove);
 		}
 
+		//verifica colisoes com a princesa
 		if (princess != null && princess.getPosition().equals(newPosition)){
-			gameEnd = ImageGUI.getInstance().getTicks();
-			int finalScore = finalScore(10000, 50);
+			gameEnd = ImageGUI.getInstance().getTicks(); //recolhe o nr de ticks desde o inicio do jogo até salvar a princesa
+			int finalScore = finalScore(10000, 50); //calcula a pontuacao final
 
 			gui.showMessage("Yippie", "Congratulations! You saved the princess!\nYour score:" + finalScore);
 
 			jumpMan.showHighscores();
 			jumpMan.saveHighscore(finalScore);
 
-			System.exit(0);
+			System.exit(0); //sai do jogo
 		}
 
 		//verifica se a posição é válida (se não tem uma parede a frente) e move o jumpMan para essa posição se for válida
@@ -177,6 +186,7 @@ public class GameEngine {
 			jumpMan.move(new Point2D(newPosition.getX() - jumpMan.getPosition().getX(),
 					newPosition.getY() - jumpMan.getPosition().getY()));
 
+			//verificar colisoes contra objetos/items
 			ImageTile newTile = jumpMan.getTile(tiles);
 
 			if (newTile != null) {
@@ -222,76 +232,81 @@ public class GameEngine {
 	}
 
 	public void tick(int ticks) {
-		//se nao tiver chao em baixo do jumpMan ele cai
-		if (jumpMan.isOnTopOfNothing(tiles)) {
-			Point2D supportTileBellow = jumpMan.nearstSupportTileBellow(tiles);
+		//logica para fazer o jumpMan cair
+		if (jumpMan.isOnTopOfNothing(tiles)) { //se nao tiver chao em baixo do jumpMan ele cai
+			Point2D supportTileBellow = jumpMan.nearstSupportTileBellow(tiles); //verifica qual o tile mais proximo do jumpMan quando ele cai
 
 			jumpMan.setFalling(true);
-			jumpMan.move(new Point2D(0, 1));
+			jumpMan.move(new Point2D(0, 1)); //move o jumpMan para baixo a cada tick
 
-			if (jumpMan.getPosition().getY() == supportTileBellow.getY() - 1){
+			if (jumpMan.getPosition().getY() == supportTileBellow.getY() - 1){ //assim q o jumpMan estiver em cima do tile, ele para de cair
 				jumpMan.setFalling(false);
 			}
 		}
 
-		List<ImageTile> removeBananas = new ArrayList<>();
-		for (DonkeyKong dk : listDK) {
+		//logica das bananas
+		List<ImageTile> removeBananas = new ArrayList<>(); //lista de bananas utiliza para as remover depois
+		for (DonkeyKong dk : listDK) { //fazer com q todos os donkey kongs mandem bananas
 			if (dk != null) {
+				//logica para o movimento
 				Point2D newDKposition = null;
-				if (level <= 6){
+				if (level <= 6){ //se o nivel onde o player está for maior q 6 ent o dk vai passar a seguir o jumpMan
 					newDKposition = dk.simpleMove(tiles);
 				}
 				else{
 					newDKposition = dk.advancedMove(tiles, jumpMan);
 				}
 
-
+				//verifica se algum donkey kong foi contra o jumpMan
 				if (jumpMan.getPosition().equals(newDKposition)) {
 					jumpMan.takeDamage(dk.getDamage());
-					if (jumpMan.getHealth() <= 0) {
+					if (jumpMan.getHealth() <= 0) { //mata o jumpMan
 						tiles.remove(jumpMan);
 						gui.removeImage(jumpMan);
 						jumpMan = null;
 					}
 				}
 
+				//donkey kong atira bananananana
 				dk.throwBanana(tiles);
 			}
 		}
 
-
+		//verifica se alguma banana vai contra o jumpMan
 		for (ImageTile banana : tiles) {
 			if (banana instanceof Banana){
-				((Banana) banana).move(new Point2D(0, 1));
+				((Banana) banana).move(new Point2D(0, 1)); //faz com q as bananas caiam para baixo a cada tick
 				if (banana.getPosition().equals(jumpMan.getPosition())) {
 					jumpMan.takeDamage(((Banana) banana).getDamage());
-					removeBananas.add(banana);
+					removeBananas.add(banana); //coloca as bananas na lista para as remover dps
 				}
-				if (banana.getPosition().getY() >= 10){
+				if (banana.getPosition().getY() >= 10){ //se a banana estiver fora da tela ent ela é apagada
 					removeBananas.add(banana);
 				}
 			}
 		}
 
+		//apaga as bananas q estão na lista de bananas
 		for (ImageTile banana : removeBananas) {
 			tiles.remove(banana);
 			ImageGUI.getInstance().removeImage(banana);
 		}
-
 	}
 
+	//logica para trocar a sala/nivel
 	private void changeRoom(String nextRoom) {
 		tiles.clear();
-		readRoomFile(nextRoom);
-		level++;
+		readRoomFile(nextRoom); //le a room
+		level++; //aumenta o nivel
 
 		gui.clearImages();
 		gui.addImages(tiles);
 	}
 
+	//calcula a pontuacao final
 	private int finalScore(int score, int penaltyPerSec){
 		int finalScore = score - (gameEnd * penaltyPerSec);
 
-		return Math.max(finalScore, 0);
+		return Math.max(finalScore, 0); //permite não tem valores negativos
 	}
 }

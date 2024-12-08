@@ -20,13 +20,10 @@ public class Banana extends Object{
     }
 
     public void move(Point2D direction) {
+        //move a banana para a direcao q recebe como parametro
         Point2D newPosition = this.getPosition().plus(new Vector2D(direction.getX(), direction.getY()));
 
         this.setPosition(newPosition);
-    }
-
-    public void moveBellow(){
-        this.setPosition(this.getPosition().plus(new Vector2D(0, 1)));
     }
 
     @Override

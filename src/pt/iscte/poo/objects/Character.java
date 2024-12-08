@@ -63,31 +63,36 @@ public abstract class Character implements ImageTile, Movable {
     }
 
     public void takeDamage(int damage) {
+        //damage q o character levou
         this.health -= damage;
-        ImageGUI.getInstance().setStatusMessage(this.getName() + " took " + damage + " damage! Health: " + getHealth() + " Damage: " + getDamage());
+        ImageGUI.getInstance().setStatusMessage(this.getName() + " took " + damage + " damage! Health: " + getHealth() + " Damage: " + getDamage()); //da display do damage q o character levou
     }
 
     public void gainHealth(int health){
+        //vida q o character ganha
         this.health += health;
-        if (this.getHealth() > this.getMaxHealth()){
+        if (this.getHealth() > this.getMaxHealth()){ //faz com q a vida do character n passe a vida maxima dele
             this.setHealth(this.getMaxHealth());
         }
-        ImageGUI.getInstance().setStatusMessage(this.getName() + " gained +" + health + " health! Health: " + getHealth() + " Damage: " + getDamage());
+        ImageGUI.getInstance().setStatusMessage(this.getName() + " gained +" + health + " health! Health: " + getHealth() + " Damage: " + getDamage()); //da display da vida q o character recebeu
     }
 
     public void gainDamage(int damage){
+        //da damage ao character (ex: o character pega numa espada sla)
         this.damage += damage;
-        ImageGUI.getInstance().setStatusMessage(this.getName() + " gained +" + damage + " damage! Health: " + getHealth() + " Damage: " + getDamage());
+        ImageGUI.getInstance().setStatusMessage(this.getName() + " gained +" + damage + " damage! Health: " + getHealth() + " Damage: " + getDamage()); //da display do damage q o character recebeu
     }
 
     public void move(Point2D direction) {
+        //move o character para a posicao q recebe como parametro
         Point2D newPosition = this.getPosition().plus(new Vector2D(direction.getX(), direction.getY()));
 
         this.setPosition(newPosition);
     }
 
     public boolean validPosition(List<ImageTile> tiles, Point2D position) {
-        if (position.getX() < 0 || position.getX() > 9){
+        //verifica se a posicao para o qual o character quer ir é valida (ex: permite q o character n atravesse paredes)
+        if (position.getX() < 0 || position.getX() > 9){ //impede o character de sair das bordas da tela
             return false;
         }
 
