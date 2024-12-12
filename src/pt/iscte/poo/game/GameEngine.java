@@ -296,6 +296,7 @@ public class GameEngine {
 	//logica para trocar a sala/nivel
 	private void changeRoom(String nextRoom) {
 		tiles.clear();
+		listDK.clear();
 		readRoomFile(nextRoom); //le a room
 		level++; //aumenta o nivel
 
