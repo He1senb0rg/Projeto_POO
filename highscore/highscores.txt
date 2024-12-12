@@ -2,9 +2,9 @@ ze: 9999
 pai: 9550
 paii: 9400
 ola: 9350
-j: 9250
-j: 9200
+piu: 9250
+joai: 9200
 jon: 9200
 LIL: 9050
-lll: 9000
-jjfjfjfj: 9000
+teste: 9000
+bue fixe: 9000

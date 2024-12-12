@@ -18,7 +18,7 @@ public class JumpMan extends Character implements Movable {
     private boolean isFalling;
 
     public JumpMan(Point2D position) {
-        super(position, 900, 900, 20);
+        super(position, 100, 100, 20);
         this.isFalling = false;
     }
 

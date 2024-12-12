@@ -9,27 +9,27 @@ import java.io.IOException;
 public class Main {
 
 	public static void main(String[] args) {
-		StringBuilder strmsg = new StringBuilder();
-		strmsg.append("---------------------------------\n");
-		strmsg.append("|          Donkey Kong          |\n");
-		strmsg.append("|                               |\n");
-		strmsg.append("| A princesa precisa de ajuda!  |\n");
-		strmsg.append("| Derrota o Donkey Kong para    |\n");
-		strmsg.append("| Resgatares a princesa!        |\n");
-		strmsg.append("|                               |\n");
-		strmsg.append("| Enfrenta vários níveis        |\n");
-		strmsg.append("| desafiadores até chegares     |\n");
-		strmsg.append("| ao final e recuperares o      |\n");
-		strmsg.append("| amor da tua vida!             |\n");
-		strmsg.append("|                               |\n");
-		strmsg.append("|          BOA SORTE!!!         |\n");
-		strmsg.append("---------------------------------\n");
+		System.out.println("---------------------------------");
+		System.out.println("|          Donkey Kong          |");
+		System.out.println("|                               |");
+		System.out.println("| A princesa precisa de ajuda!  |");
+		System.out.println("| Derrota o Donkey Kong para    |");
+		System.out.println("| Resgatares a princesa!        |");
+		System.out.println("|                               |");
+		System.out.println("| Enfrenta vários níveis        |");
+		System.out.println("| desafiadores até chegares     |");
+		System.out.println("| ao final e recuperares o      |");
+		System.out.println("| amor da tua vida!             |");
+		System.out.println("|                               |");
+		System.out.println("|          BOA SORTE!!!         |");
+		System.out.println("---------------------------------");
 
 		ImageGUI gui = ImageGUI.getInstance();
-		//gui.showMessage("Donkey Kong", strmsg); n funciona
 		GameEngine engine = new GameEngine();
 		gui.setEngine(engine);
 		gui.go();
+
+		//gui.showMessage("Donkey Kong", String.valueOf(strmsg)); n funciona
 
 		//tocar musica de background
 		try {
