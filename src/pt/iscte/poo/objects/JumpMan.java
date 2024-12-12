@@ -18,7 +18,7 @@ public class JumpMan extends Character implements Movable {
     private boolean isFalling;
 
     public JumpMan(Point2D position) {
-        super(position, 100, 100, 20);
+        super(position, 900, 900, 20);
         this.isFalling = false;
     }
 
@@ -129,6 +129,7 @@ public class JumpMan extends Character implements Movable {
 
     public void showHighscores(){
         List<Highscore> listHighscores = new ArrayList<>();
+        StringBuilder strmsg = new StringBuilder();
 
         //le o ficheiro de highscores
         try {
@@ -153,19 +154,22 @@ public class JumpMan extends Character implements Movable {
 
         //divide a lista para apenas aparecer os primeiros 10 highscores
         if (listHighscores.size() > 10) {
-            listHighscores.subList(0, 10);
+            listHighscores = listHighscores.subList(0, 10);
         }
 
-        //da display dos highscores
+        //guarda os highscores no strmsg pra dps mostrar no ecra
         if (!listHighscores.isEmpty()) {
-            System.out.println("Top 10 Highscores:");
+            strmsg.append("Top 10 Highscores:\n");
             for (Highscore highscore : listHighscores) {
-                System.out.println(listHighscores.indexOf(highscore) + 1 + ". " + highscore);
+                strmsg.append(listHighscores.indexOf(highscore) + 1).append(". ").append(highscore).append("\n");
             }
         }
         else { //se não houver highscores
             System.out.println("No highscores found");
         }
+
+        //da display dos highscores
+        ImageGUI.getInstance().showMessage("Highscores", strmsg.toString());
     }
 
     public void saveHighscore(int score){
@@ -193,9 +197,18 @@ public class JumpMan extends Character implements Movable {
         }
 
         //pede o nome ao player
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("What's your name?");
-        String name = scanner.nextLine();
+        String name = null;
+
+        while (true) {
+            name = ImageGUI.getInstance().showInputDialog("Save Highscore", "What's your name?");
+
+            if (name == null || name.isEmpty() || name.contains(":")) {
+                ImageGUI.getInstance().showMessage("Error", "Error, invalid name.");
+            }
+            else {
+                break;
+            }
+        }
 
         //escreve no ficheiro de highscores
         try {
@@ -208,7 +221,7 @@ public class JumpMan extends Character implements Movable {
 
             //divide a lista para apenas aparecer os primeiros 10 highscores
             if (listHighscores.size() > 10) {
-                listHighscores.subList(0, 10);
+                listHighscores = listHighscores.subList(0, 10);
             }
 
             //escreve no ficheiro os highscores

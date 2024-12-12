@@ -97,7 +97,7 @@ public abstract class Character implements ImageTile, Movable {
         }
 
         for (ImageTile tile : tiles) {
-            if ((tile instanceof Wall || tile instanceof Character) && tile.getPosition().equals(position)) {
+            if ((tile instanceof Wall || tile instanceof Character || tile instanceof Princess) && tile.getPosition().equals(position)) {
                 return false;
             }
         }
